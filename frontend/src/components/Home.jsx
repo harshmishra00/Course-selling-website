@@ -6,41 +6,41 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
 import { Link, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify"; 
-import Courses from './courses';
+import { toast } from "react-toastify";
+import Courses from './Courses';
 
 function Home() {
   const [courses, setCourses] = useState([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
 
-  
+
   useEffect(() => {
     const token = localStorage.getItem('user');
     setIsLoggedIn(!!token);
   }, []);
 
-  
- const handleLogout = async () => {
-  try {
-    const response = await axios.get(
-      "http://localhost:3001/api/v1/user/logout",
-      { withCredentials: true }
-    );
 
-    toast.success(response.data.message || "Logged out successfully");
-    localStorage.removeItem("user");
-    setIsLoggedIn(false);
-    navigate("/login");
-  } catch (error) {
-    console.error("Error in logging out:", error);
-    toast.error(error.response?.data?.errors || "Error in logging out");
-  }
-};
+  const handleLogout = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:3001/api/v1/user/logout",
+        { withCredentials: true }
+      );
+
+      toast.success(response.data.message || "Logged out successfully");
+      localStorage.removeItem("user");
+      setIsLoggedIn(false);
+      navigate("/login");
+    } catch (error) {
+      console.error("Error in logging out:", error);
+      toast.error(error.response?.data?.errors || "Error in logging out");
+    }
+  };
 
 
 
-  
+
   useEffect(() => {
     const fetchCourses = async () => {
       try {
@@ -56,7 +56,7 @@ function Home() {
     fetchCourses();
   }, []);
 
- 
+
   var settings = {
     dots: true,
     infinite: true,
@@ -135,7 +135,7 @@ function Home() {
                     <img className="img" src={course.image?.url} alt={course.title} />
                     <div className="p-6 text-center">
                       <h2 className="text-xl font-bold text-black">{course.title}</h2>
-                      <p>{course.description.length>35?course.description.slice(0,35)+"...":course.description}</p>
+                      <p>{course.description.length > 35 ? course.description.slice(0, 35) + "..." : course.description}</p>
                       <button className="btn2">Enroll now</button>
                     </div>
                   </div>
