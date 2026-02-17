@@ -12,32 +12,42 @@ import { BACKEND_URL } from "../../utils.js";
 function Courses() {
   const [courses, setCourses] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const navigate = useNavigate();
   const token = localStorage.getItem("user");
 
+
   useEffect(() => {
     if (token) setIsLoggedIn(true);
 
     const fetchCourses = async () => {
       try {
-        const response = await axios.get(`${BACKEND_URL}/course/courses`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const config = {
+          withCredentials: true
+        };
+        if (token) {
+          config.headers = { Authorization: `Bearer ${token}` };
+        }
 
+        const response = await axios.get(`${BACKEND_URL}/course/courses`, config);
+
+        console.log("Fetched courses:", response.data.courses);
         setCourses(response.data.courses || []);
+        setLoading(false);
       } catch (error) {
-        console.error("Fetch error:", error.response || error);
+        console.error("Fetch error:", error);
         setErrorMessage("Failed to fetch courses");
+        setLoading(false);
       }
     };
 
     fetchCourses();
   }, [token]);
 
-  
+
   const handleLogout = async () => {
     try {
       await axios.get(`${BACKEND_URL}/user/logout`, { withCredentials: true });
@@ -51,16 +61,15 @@ function Courses() {
     }
   };
 
-  
+
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   return (
     <div className="flex h-screen">
 
       <div
-        className={`fixed inset-y-0 left-0 bg-gray-100 p-5 transform ${
-          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } md:translate-x-0 transition-transform duration-300 ease-in-out w-64 z-50`}
+        className={`fixed inset-y-0 left-0 bg-gray-100 p-5 transform ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+          } md:translate-x-0 transition-transform duration-300 ease-in-out w-64 z-50`}
       >
         <nav>
           <ul className="mt-16 md:mt-0">
@@ -109,9 +118,8 @@ function Courses() {
 
 
       <div
-        className={`flex-1 p-8 transition-all duration-300 ${
-          isSidebarOpen ? "ml-64" : "ml-0"
-        } md:ml-64`}
+        className={`flex-1 p-8 transition-all duration-300 ${isSidebarOpen ? "ml-64" : "ml-0"
+          } md:ml-64`}
       >
         <h2 className="page-title text-2xl font-semibold mb-4">All Courses</h2>
 
@@ -120,8 +128,9 @@ function Courses() {
           <div className="text-red-500 text-center mb-4">{errorMessage}</div>
         )}
 
-
-        {courses.length > 0 ? (
+        {loading ? (
+          <div className="text-center">Loading courses...</div>
+        ) : courses.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {courses.map((course) => (
               <div

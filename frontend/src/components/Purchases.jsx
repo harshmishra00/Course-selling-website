@@ -26,7 +26,6 @@ function Purchases() {
     }
   }, [token, navigate]);
 
-  // ✅ Fetch purchases
   useEffect(() => {
     const fetchPurchases = async () => {
       if (!token) return;
@@ -36,7 +35,7 @@ function Purchases() {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        setPurchases(response.data.courseData || []);
+        setPurchases(response.data.purchased || []);
       } catch (error) {
         console.error("Fetch error:", error.response || error);
 
@@ -53,7 +52,6 @@ function Purchases() {
     fetchPurchases();
   }, [token, navigate]);
 
-  // ✅ Logout handler
   const handleLogout = async () => {
     try {
       await axios.get(`${BACKEND_URL}/user/logout`, { withCredentials: true });
@@ -67,16 +65,13 @@ function Purchases() {
     }
   };
 
-  // ✅ Toggle sidebar (mobile)
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   return (
     <div className="flex h-screen">
-      {/* Sidebar */}
       <div
-        className={`fixed inset-y-0 left-0 bg-gray-100 p-5 transform ${
-          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } md:translate-x-0 transition-transform duration-300 ease-in-out w-64 z-50`}
+        className={`fixed inset-y-0 left-0 bg-gray-100 p-5 transform ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+          } md:translate-x-0 transition-transform duration-300 ease-in-out w-64 z-50`}
       >
         <nav>
           <ul className="mt-16 md:mt-0">
@@ -125,9 +120,8 @@ function Purchases() {
 
 
       <div
-        className={`flex-1 p-8 transition-all duration-300 ${
-          isSidebarOpen ? "ml-64" : "ml-0"
-        } md:ml-64`}
+        className={`flex-1 p-8 transition-all duration-300 ${isSidebarOpen ? "ml-64" : "ml-0"
+          } md:ml-64`}
       >
         <h2 className="page-title text-2xl font-semibold mb-4">My Purchases</h2>
 
@@ -139,28 +133,28 @@ function Purchases() {
 
         {purchases.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {purchases.map((course) => (
+            {purchases.map((purchase) => (
               <div
-                key={course._id}
+                key={purchase._id}
                 className="bg-white rounded-lg shadow-md p-6 mb-6 flex flex-col justify-between "
               >
                 <img
                   className="rounded-lg w-full h-48 object-fill"
-                  src={course.image?.url || "https://via.placeholder.com/200"}
-                  alt={course.title}
+                  src={purchase.courseId?.image?.url || "https://via.placeholder.com/200"}
+                  alt={purchase.courseId?.title}
                 />
 
                 <div className="mt-4">
 
-                  <h3 className="text-lg font-semibold">{course.title}</h3>
+                  <h3 className="text-lg font-semibold">{purchase.courseId?.title}</h3>
 
 
                   <p className="text-sm text-gray-600 line-clamp-2">
-                    {course.description || "No description available"}
+                    {purchase.courseId?.description || "No description available"}
                   </p>
 
 
-                  <Link to={`/course/${course._id}`}>
+                  <Link to={`/course/${purchase.courseId?._id}`}>
                     <button className="mt-3 w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
                       Dive in..
                     </button>

@@ -7,8 +7,18 @@ function CourseCreate() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
+  const [category, setCategory] = useState("");
+  const [level, setLevel] = useState("");
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+
+  const categories = [
+    "Web Development",
+    "App Development",
+    "Data Science",
+    "Artificial Intelligence",
+    "Marketing",
+  ];
 
   const navigate = useNavigate();
 
@@ -33,6 +43,8 @@ function CourseCreate() {
     formData.append("title", title);
     formData.append("description", description);
     formData.append("price", price);
+    formData.append("category", category);
+    formData.append("level", level);
     formData.append("image", image);
 
     const admin = localStorage.getItem("admin");
@@ -61,11 +73,13 @@ function CourseCreate() {
       setTitle("");
       setDescription("");
       setPrice("");
+      setCategory("");
+      setLevel("");
       setImage(null);
       setImagePreview(null);
 
 
-      
+
     } catch (error) {
       console.error("Error in creating course", error);
       toast.error(error.response?.data?.errors || "Failed to create course");
@@ -123,6 +137,41 @@ function CourseCreate() {
             />
           </div>
 
+          <div>
+            <label className="block text-gray-700 font-medium mb-2">
+              Category
+            </label>
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring focus:ring-blue-400"
+              required
+            >
+              <option value="" disabled>Select Category</option>
+              {categories.map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-gray-700 font-medium mb-2">
+              Level
+            </label>
+            <select
+              value={level}
+              onChange={(e) => setLevel(e.target.value)}
+              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring focus:ring-blue-400"
+              required
+            >
+              <option value="" disabled>Select Level</option>
+              <option value="Beginner">Beginner</option>
+              <option value="Intermediate">Intermediate</option>
+              <option value="Advanced">Advanced</option>
+            </select>
+          </div>
 
           <div>
             <label className="block text-gray-700 font-medium mb-2">

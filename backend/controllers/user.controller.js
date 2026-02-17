@@ -1,10 +1,9 @@
-import { User } from "/Users/harshmishra/Desktop/Course-selling-website/backend/modals/user.modal.js";
+import { User } from "../modals/user.modal.js";
 import bcrypt from "bcryptjs";
-import {z} from "zod";
+import { z } from "zod";
 import jwt from "jsonwebtoken";
-import config from "/Users/harshmishra/Desktop/Course-selling-website/backend/config.js";
+import config from "../config.js";
 import { Purchase } from "../modals/purchase.modal.js";
-import { Course } from "../modals/course.modals.js";
 
 export const signup = async (req, res) => {
     const { firstName, lastName, email, password } = req.body;
@@ -19,7 +18,7 @@ export const signup = async (req, res) => {
     const validateData = userSchema.safeParse(req.body);
 
     if (!validateData.success) {
-        return res.status(400).json({errors: validateData.error.issues.map(err=>err.message) });
+        return res.status(400).json({ errors: validateData.error.issues.map(err => err.message) });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -57,13 +56,14 @@ export const login = async (req, res) => {
             config.JWT_USER_PASSWORD,
             { expiresIn: "1d" }
         );
-        const cookieOptions = { expires: new Date(Date.now() + 86400000), 
+        const cookieOptions = {
+            expires: new Date(Date.now() + 86400000),
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production" ,
-            sameSite:"Strict" 
-        }; 
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "Strict"
+        };
 
-        res.status(201).json({ message: "Login success", user, token });
+        res.status(200).cookie("jwt", token, cookieOptions).json({ message: "Login success", user, token });
     } catch (error) {
         res.status(500).json({ errors: "Error in login" });
         console.log("Error in login", error);
@@ -83,21 +83,8 @@ export const logout = async (req, res) => {
 export const purchases = async (req, res) => {
     const userId = req.userId;
     try {
-
-        const purchased = await Purchase.find({ userId });
-
-
-        let purchasedCourseId = [];
-        for (let i = 0; i < purchased.length; i++) {
-            purchasedCourseId.push(purchased[i].courseId);
-        }
-
-
-        const courseData = await Course.find({
-            _id: { $in: purchasedCourseId }
-        });
-
-        res.status(200).json({ purchased, courseData });
+        const purchased = await Purchase.find({ userId }).populate("courseId");
+        res.status(200).json({ purchased });
     } catch (error) {
         res.status(500).json({ errors: "Error in purchases" });
         console.log("Error in purchases", error);

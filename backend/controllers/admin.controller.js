@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
-import {z} from "zod";
+import { z } from "zod";
 import jwt from "jsonwebtoken";
-import config from "/Users/harshmishra/Desktop/Course-selling-website/backend/config.js";
+import config from "../config.js";
 import { Admin } from "../modals/admin.modal.js";
 
 export const signup = async (req, res) => {
@@ -17,7 +17,7 @@ export const signup = async (req, res) => {
     const validateData = adminSchema.safeParse(req.body);
 
     if (!validateData.success) {
-        return res.status(400).json({errors: validateData.error.issues.map(err=>err.message) });
+        return res.status(400).json({ errors: validateData.error.issues.map(err => err.message) });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -55,13 +55,14 @@ export const login = async (req, res) => {
             config.JWT_ADMIN_PASSWORD,
             { expiresIn: "1d" }
         );
-        const cookieOptions = { expires: new Date(Date.now() + 86400000), 
+        const cookieOptions = {
+            expires: new Date(Date.now() + 86400000),
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production" ,
-            sameSite:"Strict" 
-        }; 
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "Strict"
+        };
 
-        res.status(201).json({ message: "Login success", admin, token });
+        res.status(200).cookie("jwt", token, cookieOptions).json({ message: "Login success", admin, token });
     } catch (error) {
         res.status(500).json({ errors: "Error in login" });
         console.log("Error in login", error);
@@ -70,7 +71,7 @@ export const login = async (req, res) => {
 
 export const logout = async (req, res) => {
     try {
-        if(!req.cookies.jwt){
+        if (!req.cookies.jwt) {
             return res.status(401).json({ errors: "Kindly login first" });
         }
         res.clearCookie("jwt");

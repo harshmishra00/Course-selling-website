@@ -27,7 +27,7 @@ function Login() {
       toast.success(response.data.message);
 
       localStorage.setItem("user", response.data.token);
-      navigate('/'); 
+      navigate('/');
 
     } catch (error) {
       if (error.response) {
@@ -46,7 +46,7 @@ function Login() {
         <form className='frm' onSubmit={handleSubmit}>
           <div className="email">
             <label htmlFor="email">Email: </label><br />
-            <input 
+            <input
               type="email"
               id="email"
               onChange={(e) => setEmail(e.target.value)}
@@ -59,7 +59,7 @@ function Login() {
 
           <div className="pass">
             <label htmlFor="password">Password: </label><br />
-            <input 
+            <input
               type="password"
               id="password"
               onChange={(e) => setPassword(e.target.value)}
