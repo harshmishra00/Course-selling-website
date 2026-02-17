@@ -8,6 +8,11 @@ import fileUpload from 'express-fileupload';
 import userRoute from "./routes/user.routes.js"
 import adminRoute from "./routes/admin.route.js"
 import cookieParser from 'cookie-parser';
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express()
 dotenv.config();
@@ -39,6 +44,12 @@ mongoose.connect(DB_URI).then(() => {
 app.use("/api/v1/course", courseRoute);
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/admin", adminRoute);
+
+app.use(express.static(path.join(__dirname, "../frontend/dist")));
+
+app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
+});
 
 cloudinary.config({
     cloud_name: process.env.cloud_name,
